@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuestionario BPM - Medicamentos Biológicos</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; background: #f9f9f9; }
+    h1 { color: #2c3e50; }
+    .question { margin-bottom: 1.5rem; padding: 1rem; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .answers label { display: block; margin: 0.5rem 0; }
+    .btn { padding: 0.5rem 1rem; border: none; background: #3498db; color: white; border-radius: 5px; cursor: pointer; }
+    .btn:hover { background: #2980b9; }
+    #result { margin-top: 2rem; font-weight: bold; font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+  <h1>Cuestionario BPM - Medicamentos Biológicos</h1>
+  <form id="quizForm"></form>
+  <button class="btn" onclick="calcularResultado()">Enviar respuestas</button>
+  <div id="result"></div>
+
+  <script>
+    const preguntas = [
+      { texto: "¿Cuál es el objetivo principal de la Resolución 5402 de 2015?", opciones: ["Regular la distribución de medicamentos biológicos.", "Establecer el Manual y el instrumento de verificación de las Buenas Prácticas de Manufactura de Medicamentos Biológicos.", "Controlar la comercialización de productos farmacéuticos.", "Definir los precios de los medicamentos biológicos."], correcta: 1 },
+      { texto: "¿A quiénes aplica la Resolución 5402 de 2015?", opciones: ["Únicamente a laboratorios nacionales de medicamentos biológicos.", "A todos los laboratorios fabricantes de medicamentos biológicos, tanto nacionales como extranjeros.", "Solo a distribuidores de medicamentos biológicos.", "A farmacias y droguerías."], correcta: 1 },
+      { texto: "¿Qué debe garantizar el personal que trabaja en áreas de animales (bioterios)?", opciones: ["El uso de vestimenta especial y contar con instalaciones adecuadas para el cambio de ropa y duchas.", "La alimentación de los animales.", "La limpieza general del laboratorio.", "El transporte de medicamentos."], correcta: 0 },
+      { texto: "¿Qué procedimiento debe seguirse para obtener la certificación de cumplimiento de BPM para medicamentos biológicos?", opciones: ["El establecido en el Decreto 549 de 2001, modificado por el Decreto 162 de 2004.", "El procedimiento que cada laboratorio considere adecuado.", "No se requiere ningún procedimiento específico.", "Un trámite ante la Organización Mundial de la Salud."], correcta: 0 },
+      { texto: "¿Qué sucede con las certificaciones de BPM vigentes al momento de la entrada en vigencia de la Resolución 5402 de 2015?", opciones: ["Se invalidan inmediatamente.", "Permanecen válidas hasta su expiración.", "Deben renovarse en un plazo de 30 días.", "Solo son válidas para productos nacionales."], correcta: 1 },
+      { texto: "¿Qué tipo de productos están sujetos a las BPM según la Resolución 5402 de 2015?", opciones: ["Únicamente productos sintéticos.", "Medicamentos biológicos.", "Productos cosméticos.", "Dispositivos médicos."], correcta: 1 },
+      { texto: "¿Cuál de los siguientes aspectos es fundamental en las BPM para medicamentos biológicos?", opciones: ["Control de calidad del agua utilizada en la producción.", "Publicidad de los productos.", "Estrategias de marketing.", "Distribución de muestras médicas."], correcta: 0 },
+      { texto: "¿Qué debe incluir el manual de BPM según la Resolución 5402 de 2015?", opciones: ["Procedimientos para la fabricación, control de calidad y almacenamiento de medicamentos biológicos.", "Estrategias de venta.", "Listados de precios.", "Información sobre competidores."], correcta: 0 },
+      { texto: "¿Quién es responsable de certificar el cumplimiento de las BPM en Colombia?", opciones: ["El Ministerio de Comercio.", "El Instituto Nacional de Vigilancia de Medicamentos y Alimentos (INVIMA).", "La Organización Mundial de la Salud.", "Las universidades."], correcta: 1 },
+      { texto: "¿Qué debe hacerse en caso de modificaciones significativas en el proceso de fabricación?", opciones: ["Notificar al INVIMA y obtener una nueva certificación de BPM.", "Continuar con la producción sin cambios.", "Informar a los clientes directamente.", "Publicar un aviso en medios de comunicación."], correcta: 0 },
+      { texto: "¿Cuál es la vigencia de la certificación de BPM una vez obtenida?", opciones: ["Indefinida.", "Depende de la normativa vigente y las condiciones establecidas por el INVIMA.", "Un año.", "Tres meses."], correcta: 1 },
+      { texto: "¿Qué debe garantizarse respecto al almacenamiento de productos biológicos?", opciones: ["Que estén expuestos a luz natural.", "Que se mantengan en condiciones ambientales incontroladas.", "Que se almacenen bajo condiciones controladas de temperatura, humedad y protección contra la contaminación.", "Que se almacenen junto con alimentos."], correcta: 2 },
+      { texto: "¿Cuál es el papel del sistema de documentación en las BPM?", opciones: ["Llevar un control de nómina.", "Controlar los inventarios de productos terminados.", "Documentar claramente todas las actividades relacionadas con la manufactura.", "Registrar únicamente el nombre del operario."], correcta: 2 },
+      { texto: "¿Qué se requiere del personal que trabaja en producción de biológicos?", opciones: ["Formación en marketing farmacéutico.", "Capacitación y conocimientos específicos en procesos de producción biotecnológica.", "Conocimiento básico en enfermería.", "Experiencia en ventas."], correcta: 1 },
+      { texto: "¿Qué tipo de vestimenta debe usarse en áreas críticas?", opciones: ["Uniforme casual.", "Ropa de calle limpia.", "Ropa protectora estéril específica para cada zona.", "Uniforme de laboratorio con corbata."], correcta: 2 },
+      { texto: "¿Qué debe hacer una empresa si cambia el proveedor de una materia prima crítica?", opciones: ["Usarlo sin notificar.", "Hacer publicidad del cambio.", "Validar el nuevo proveedor y notificar a la autoridad sanitaria.", "Cambiar solo si es más barato."], correcta: 2 },
+      { texto: "¿Qué sistemas de agua son críticos en la fabricación de biológicos?", opciones: ["Agua de pozo.", "Agua potable.", "Agua para inyección (WFI) y agua purificada.", "Agua de lluvia."], correcta: 2 },
+      { texto: "¿Qué controles se deben aplicar sobre el personal?", opciones: ["Ninguno, si están uniformados.", "Solo pruebas médicas anuales.", "Controles de salud y capacitaciones periódicas.", "Solo evaluación visual."], correcta: 2 },
+      { texto: "¿Cuál es el propósito de las validaciones de proceso?", opciones: ["Disminuir costos.", "Verificar que el proceso cumple consistentemente con las especificaciones.", "Probar nuevos métodos publicitarios.", "Determinar el mejor empaque."], correcta: 1 },
+      { texto: "¿Qué debe contener un lote de producción?", opciones: ["Solo la cantidad producida.", "Registro de los materiales usados, los controles aplicados y los resultados obtenidos.", "Nombre del operario únicamente.", "Fecha de inicio del turno."], correcta: 1 },
+      { texto: "¿Qué es una desviación en el contexto de BPM?", opciones: ["Una reducción de producción.", "Una variación respecto al procedimiento establecido.", "Un cambio de área de trabajo.", "Una falta de asistencia."], correcta: 1 },
+      { texto: "¿Quién es responsable del aseguramiento de la calidad?", opciones: ["Recursos humanos.", "Ventas.", "Producción.", "Un equipo especializado en calidad."], correcta: 3 },
+      { texto: "¿Qué se entiende por trazabilidad en medicamentos biológicos?", opciones: ["Capacidad de rastrear el producto desde su venta hasta el usuario final.", "Capacidad de replicar la fórmula.", "Capacidad de detectar impurezas visualmente.", "Seguimiento del nombre del fabricante."], correcta: 0 },
+      { texto: "¿Cuál es la importancia de las auditorías internas?", opciones: ["Aumentar las ventas.", "Detectar oportunidades de marketing.", "Verificar el cumplimiento de las BPM.", "Incrementar la rotación de personal."], correcta: 2 },
+      { texto: "¿Qué tipo de controles debe tener el sistema de aire en zonas críticas?", opciones: ["Ventiladores.", "Aire acondicionado convencional.", "Sistemas de filtración HEPA y presiones diferenciales.", "Ventanas abiertas."], correcta: 2 },
+      { texto: "¿Qué es una campaña de producción?", opciones: ["Lanzamiento de un nuevo producto.", "Producción por lotes secuenciales de un mismo producto.", "Publicidad en redes sociales.", "Almacenamiento masivo."], correcta: 1 },
+      { texto: "¿Qué debe hacerse con los productos no conformes?", opciones: ["Se venden con descuento.", "Se almacenan indefinidamente.", "Se segregan, identifican y evalúan para su disposición.", "Se mezclan con otros productos."], correcta: 2 },
+      { texto: "¿Qué se requiere para liberar un lote al mercado?", opciones: ["Que lo apruebe el director financiero.", "Solo una prueba visual.", "Revisión completa de la documentación y aprobación del área de aseguramiento de calidad.", "Aprobación por votación del personal."], correcta: 2 },
+      { texto: "¿Qué debe incluir el control de cambios?", opciones: ["Solo el nombre del jefe.", "Justificación, evaluación del impacto, aprobación y seguimiento.", "Tiempo de ejecución únicamente.", "Una nota informal."], correcta: 1 },
+      { texto: "¿Qué ocurre si se incumplen las BPM establecidas en la Resolución 5402?", opciones: ["No pasa nada.", "Se da un plazo para corregir sin consecuencias.", "Se pueden generar sanciones, suspensión de actividades o cancelación del registro sanitario.", "Solo se debe emitir una disculpa pública."], correcta: 2 }
+    ];
+
+    const form = document.getElementById("quizForm");
+    preguntas.forEach((pregunta, i) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `<p><strong>${i + 1}. ${pregunta.texto}</strong></p>`;
+      const opcionesDiv = document.createElement("div");
+      opcionesDiv.className = "answers";
+      pregunta.opciones.forEach((opcion, j) => {
+        const id = `q${i}_op${j}`;
+        opcionesDiv.innerHTML += `<label><input type="radio" name="q${i}" value="${j}" required> ${opcion}</label>`;
+      });
+      div.appendChild(opcionesDiv);
+      form.appendChild(div);
+    });
+
+    function calcularResultado() {
+      let correctas = 0;
+      preguntas.forEach((pregunta, i) => {
+        const seleccionada = document.querySelector(`input[name=q${i}]:checked`);
+        if (seleccionada && parseInt(seleccionada.value) === pregunta.correcta) {
+          correctas++;
+        }
+      });
+      const resultado = document.getElementById("result");
+      resultado.textContent = `Obtuviste ${correctas} de ${preguntas.length} respuestas correctas.`;
+    }
+  </script>
+</body>
+</html>
